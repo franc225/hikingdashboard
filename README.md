@@ -1,24 +1,25 @@
 # Hiking Dashboard – GPX Trail Visualization
 
-This project is a personal hiking dashboard built with R and Leaflet. 
+This project is a personal hiking dashboard built with R and Leaflet.  
 It visualizes hiking and walking routes exported from Strava GPX files and displays them on an interactive map.
 
-The goal of this first version is intentionally simple:
-- Load GPX tracks from a local folder
-- Display all trails on a map
-- Visually highlight frequently used paths through line overlap
-
-No database, no API, no automation — just a clean and reliable base.
+The goal of this project is to provide a simple, reliable, and extensible base for exploring personal hiking data, without databases, APIs, or heavy dashboards.
 
 ---
 
-## Features (v1)
+## Features (v1.1)
 
-- Reads multiple GPX files from a local `data/` folder
-- Interactive Leaflet map rendered in RStudio
+- Loads multiple GPX track files from a local `data/` folder
+- Interactive Leaflet map rendered in the RStudio Viewer
 - Single trail color for visual consistency
 - Frequency of passage shown naturally by line overlap
-- Minimal, stable R script (no fragile HTML tricks)
+- Distance computed for each GPX track
+- Popups displaying trail name and distance
+- Summary table embedded directly in the map:
+  - number of passages per trail
+  - average distance
+  - total cumulative distance
+- Optional HTML export of the map
 
 ---
 
@@ -35,8 +36,11 @@ hikingdashboard/
 - `data/`  
   Contains GPX files exported from Strava (or Garmin via Strava sync).
 
+- `output/`  
+  Contains the generated HTML map (optional).
+
 - `generate_map.R`  
-  Main script that loads GPX files and renders the map.
+  Main script that loads GPX files, computes distances, and renders the map.
 
 ---
 
@@ -47,8 +51,11 @@ hikingdashboard/
   - `sf`
   - `leaflet`
   - `stringr`
+  - `dplyr`
+  - `magrittr`
+  - `htmlwidgets`
 
 Packages can be installed with:
 
 ```r
-install.packages(c("sf", "leaflet", "stringr"))
+install.packages(c("sf", "leaflet", "stringr", "dplyr", "magrittr", "htmlwidgets"))
