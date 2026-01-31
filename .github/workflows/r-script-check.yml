@@ -1,0 +1,29 @@
+name: R script check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+
+      - name: Install system dependencies for sf
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgdal-dev libgeos-dev libproj-dev
+
+      - name: Install R packages
+        run: |
+          Rscript -e 'install.packages(c("sf","leaflet","stringr","magrittr","htmlwidgets"), repos="https://cloud.r-project.org")'
+
+      - name: Run generate_map.R
+        run: |
+          Rscript tests/run_script.R
