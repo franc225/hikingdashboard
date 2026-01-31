@@ -1,3 +1,5 @@
+![R basic check](https://github.com/franc225/hikingdashboard/actions/workflows/r-script-check.yml/badge.svg)
+
 # Hiking Dashboard – GPX Trail Visualization
 
 This project is a personal hiking dashboard built with R and Leaflet.  
