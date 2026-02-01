@@ -1,0 +1,96 @@
+---
+title: "Hiking Dashboard – GPX Summary"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+## Overview
+
+This report summarizes hiking and walking routes exported from Strava as GPX files.
+It provides an interactive map of all trails and a simple statistical overview.
+
+---
+
+## Load data
+
+```{r load-data}
+library(sf)
+library(leaflet)
+library(stringr)
+library(dplyr)
+
+DATA_DIR <- "data"
+
+gpx_files <- list.files(DATA_DIR, pattern = "\\.gpx$", full.names = TRUE)
+stopifnot(length(gpx_files) > 0)
+
+traces <- lapply(gpx_files, function(f) {
+  st_read(f, layer = "tracks", quiet = TRUE) |>
+    mutate(
+      randonnee = str_remove(basename(f), "\\s*\\(\\d+\\)\\.gpx$") |>
+                  str_remove("\\.gpx$")
+    )
+})
+
+traces_sf <- do.call(rbind, traces)
+
+# Distance in kilometers
+traces_sf$distance_km <- as.numeric(st_length(traces_sf)) / 1000
+```
+
+---
+
+## Trail map
+
+```{r map}
+leaflet() |>
+  addTiles() |>
+  addPolylines(
+    data = traces_sf,
+    color = "#08306B",
+    weight = 6,
+    opacity = 0.3,
+    popup = ~paste0(
+      "<b>", randonnee, "</b><br>",
+      "Distance: ", round(distance_km, 2), " km"
+    )
+  )
+```
+
+---
+
+## Summary table
+
+```{r summary}
+summary_df <- traces_sf |>
+  st_drop_geometry() |>
+  group_by(randonnee) |>
+  summarise(
+    passages = n(),
+    total_distance_km = round(sum(distance_km), 2),
+    average_distance_km = round(mean(distance_km), 2)
+  ) |>
+  arrange(desc(passages), desc(total_distance_km))
+
+summary_df
+```
+
+---
+
+## Notes
+
+- Trail frequency is inferred visually through line overlap on the map.
+- Only GPX track geometry is used.
+- No personal or physiological data is processed.
+
+This document is intended as a lightweight, reproducible hiking activity summary.

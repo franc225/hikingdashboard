@@ -6,3 +6,5 @@ output/
 .RData
 
 .Rhistory
+
+report.html
